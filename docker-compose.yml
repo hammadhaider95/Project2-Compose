@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  dind:
+    image: docker:dind
+    privileged: true  # Required for Docker-In-Docker
+    networks:
+      - jenkinsnet
+    volumes:
+      - /var/lib/docker
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    networks:
+      - jenkinsnet
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    environment:
+      - DOCKER_HOST=tcp://dind:2375
+
+networks:
+  jenkinsnet:
+
+volumes:
+  jenkins_home:
